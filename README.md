@@ -1,5 +1,7 @@
 # [ABY](http://encrypto.de/papers/DSZ15.pdf) [![Build Status](https://travis-ci.org/encryptogroup/ABY.svg?branch=public)](https://travis-ci.org/encryptogroup/ABY)
 
+### WARNING
+This branch is work in progress and very unstable. The comments in () at the testing description don't work yet.
 
 ### A Framework for Efficient Mixed-Protocol Secure Two-Party Computation
 
@@ -212,6 +214,15 @@ Also, see the [online doxygen documentation of ABY](http://encryptogroup.github.
   * **Example:** The Millionaire's problem requires to specify the role of the executing party. All other parameters will use default values if they are not set. You execute it locally with: `./millionaire_prob.exe -r 0` and `./millionaire_prob.exe -r 1`, each in a separate terminal.
   * You should get some debug output for you to verify the correctness of the computation.
   * Performance statistics can be turned on setting `#define PRINT_PERFORMANCE_STATS 1` in `src/abycore/ABY_utils/ABYconstants.h` in [line 32](https://github.com/encryptogroup/ABY/blob/public/src/abycore/ABY_utils/ABYconstants.h#L32).
+
+#### Testing the ABY Framework with the BOOST framework
+* WARNING: The comments inside of () don't work yet.
+* To test the framework using BOOST you have build ABY as described above and set the
+  `-DABY_BUILD_TEST=On` option(, set the `-DABY_BUILD_EXE=On` option if you also want to test the applications,) and the application's binary was created inside the build directory.
+* After building the framework to run the tests you can use `make test` in the build directory to call the tests.
+* If you want to have more information on the tests you can also call the specific tests `./operations_test` (or `./examples_test`) in `bin/` inside the build directory.
+* Unlike the applications you don't need to run two instances with seperate terminaly of the test. The tests will handle it for you.
+* You can only test locally.
 
 #### Creating and Building your own ABY Application
 * To get an idea how to create a simple ABY application, you can follow the
