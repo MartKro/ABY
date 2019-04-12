@@ -17,9 +17,9 @@
  */
 
 #include "abycircuit.h"
+#include "../ABY_utils/asserthandling.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -59,7 +59,7 @@ inline GATE* ABYCircuit::InitGate(e_gatetype type) {
 inline GATE* ABYCircuit::InitGate(e_gatetype type, uint32_t ina) {
 	GATE* gate = InitGate(type);
 
-	assert(ina < GetGateHead());
+	precondition_assert(ina < GetGateHead());
 	gate->depth = ComputeDepth(m_vGates[ina]);
 	m_nMaxDepth = std::max(m_nMaxDepth, gate->depth);
 	gate->ingates.ningates = 1;
@@ -76,7 +76,7 @@ inline GATE* ABYCircuit::InitGate(e_gatetype type, uint32_t ina, uint32_t inb) {
 
 	if(ina >= GetGateHead() || inb >= GetGateHead()) {
 		std::cout << "ina = " << ina << ", inb = " << inb << ", nfg = " << GetGateHead() << std::endl;
-		assert(ina < GetGateHead() && inb < GetGateHead());
+		precondition_assert(ina < GetGateHead() && inb < GetGateHead());
 
 	}
 	gate->depth = std::max(ComputeDepth(m_vGates[ina]), ComputeDepth(m_vGates[inb]));
@@ -85,8 +85,8 @@ inline GATE* ABYCircuit::InitGate(e_gatetype type, uint32_t ina, uint32_t inb) {
 	gate->ingates.inputs.twin.left = ina;
 	gate->ingates.inputs.twin.right = inb;
 
-	assert(m_vGates[ina].context == m_vGates[inb].context);
-	assert(m_vGates[ina].sharebitlen == m_vGates[inb].sharebitlen);
+	precondition_assert(m_vGates[ina].context == m_vGates[inb].context);
+	precondition_assert(m_vGates[ina].sharebitlen == m_vGates[inb].sharebitlen);
 
 	gate->context = m_vGates[ina].context;
 	gate->sharebitlen = m_vGates[ina].sharebitlen;
@@ -104,7 +104,7 @@ inline GATE* ABYCircuit::InitGate(e_gatetype type, std::vector<uint32_t>& inputs
 	if (inputs.size() == 0)
 		return gate;
 	uint32_t ina = inputs[0];
-	assert(ina < GetGateHead());
+	precondition_assert(ina < GetGateHead());
 
 	gate->depth = ComputeDepth(m_vGates[ina]);
 	gate->ingates.inputs.parents = (uint32_t*) malloc(sizeof(uint32_t) * inputs.size());
@@ -116,10 +116,10 @@ inline GATE* ABYCircuit::InitGate(e_gatetype type, std::vector<uint32_t>& inputs
 	MarkGateAsUsed(ina);
 
 	for (uint32_t i = 1; i < inputs.size(); i++) {
-		assert(inputs[i] < GetGateHead());
+		precondition_assert(inputs[i] < GetGateHead());
 		gate->depth = std::max(gate->depth, ComputeDepth(m_vGates[inputs[i]]));
-		assert(gate->context == m_vGates[inputs[i]].context);
-		assert(gate->sharebitlen == m_vGates[inputs[i]].sharebitlen);
+		precondition_assert(gate->context == m_vGates[inputs[i]].context);
+		precondition_assert(gate->sharebitlen == m_vGates[inputs[i]].sharebitlen);
 
 		MarkGateAsUsed(inputs[i]);
 	}
@@ -148,7 +148,7 @@ uint32_t ABYCircuit::PutPrimitiveGate(e_gatetype type, uint32_t inleft, uint32_t
 uint32_t ABYCircuit::PutNonLinearVectorGate(e_gatetype type, uint32_t choiceinput, uint32_t vectorinput, uint32_t rounds) {
 	GATE* gate = InitGate(type, choiceinput, vectorinput);
 
-	assert((m_vGates[vectorinput].nvals % m_vGates[choiceinput].nvals) == 0);
+	precondition_assert((m_vGates[vectorinput].nvals % m_vGates[choiceinput].nvals) == 0);
 
 	gate->nvals = m_vGates[vectorinput].nvals;
 
@@ -205,7 +205,7 @@ std::vector<uint32_t> ABYCircuit::PutSplitterGate(uint32_t input, std::vector<ui
 	}
 	//std::cout << "ctr = " << ctr << ", nvals = " << nvals << std::endl;
 	//this check is in theory not needed but remains here to notify the developer if a bit was missed
-	assert(ctr == nvals);
+	precondition_assert(ctr == nvals);
 
 	return outids;
 }
@@ -218,7 +218,7 @@ uint32_t ABYCircuit::PutCombineAtPosGate(std::vector<uint32_t> input, uint32_t p
 	gate->gs.combinepos.pos = pos;
 
 	for (uint32_t i = 0; i < input.size(); i++) {
-		assert(pos < m_vGates[input[i]].nvals);
+		precondition_assert(pos < m_vGates[input[i]].nvals);
 	}
 
 	if (gate->nvals > m_nMaxVectorSize)
@@ -234,7 +234,7 @@ uint32_t ABYCircuit::PutSubsetGate(uint32_t input, uint32_t* posids, uint32_t nv
 	gate->nvals = nvals_out;
 
 	//std::cout << "Putting subset gate with nvals = " << nvals << " on pos " << currentGateId() << std::endl;
-	//assert(gate->nvals <= m_vGates[input].nvals);
+	//precondition_assert(gate->nvals <= m_vGates[input].nvals);
 
 	gate->gs.sub_pos.copy_posids = copy_posids;
 
@@ -252,7 +252,7 @@ uint32_t ABYCircuit::PutSubsetGate(uint32_t input, uint32_t* posids, uint32_t nv
 	//This check can be left out for performance reasons
 	uint32_t inputnvals = m_vGates[input].nvals;
 	for (uint32_t i = 0; i < gate->nvals; i++) {
-		assert(posids[i] < inputnvals);
+		precondition_assert(posids[i] < inputnvals);
 	}
 
 	if (gate->nvals > m_nMaxVectorSize)
@@ -273,7 +273,7 @@ uint32_t ABYCircuit::PutStructurizedCombinerGate(std::vector<uint32_t> input, ui
 	/*std::cout << "From " << pos_start << " incr: " << pos_incr << " for " << nvals << " vals with max = ";
 	for (uint32_t i = 0; i < input.size(); i++) {
 		std::cout << m_vGates[input[i]].nvals << "; ";
-		//assert(pos_start + ((nvals-1) * pos_incr) <= m_vGates[input[i]].nvals);
+		//precondition_assert(pos_start + ((nvals-1) * pos_incr) <= m_vGates[input[i]].nvals);
 	}
 	std::cout << std::endl;*/
 
@@ -311,7 +311,7 @@ uint32_t ABYCircuit::PutPermutationGate(std::vector<uint32_t> input, uint32_t* p
 	gate->gs.perm.posids = (uint32_t*) malloc(sizeof(uint32_t) * gate->nvals);
 
 	for (uint32_t i = 0; i < input.size(); i++) {
-		assert(positions[i] < m_vGates[input[i]].nvals);
+		precondition_assert(positions[i] < m_vGates[input[i]].nvals);
 		gate->gs.perm.posids[i] = positions[i];
 	}
 
@@ -393,7 +393,7 @@ uint32_t ABYCircuit::PutSharedINGate(e_sharing context, uint32_t nvals, uint32_t
 }
 
 uint32_t ABYCircuit::PutConstantGate(e_sharing context, UGATE_T val, uint32_t nvals, uint32_t sharebitlen) {
-	assert(nvals > 0 && sharebitlen > 0);
+	precondition_assert(nvals > 0 && sharebitlen > 0);
 	GATE* gate = InitGate(G_CONSTANT);
 	gate->gs.constval = val;
 	gate->depth = 0;
@@ -425,7 +425,7 @@ uint32_t ABYCircuit::PutCONVGate(std::vector<uint32_t> in, uint32_t nrounds, e_s
 	gate->nvals = m_vGates[in[0]].nvals;
 
 	for (uint32_t i = 0; i < in.size(); i++) {
-		assert(gate->nvals == m_vGates[in[i]].nvals);
+		precondition_assert(gate->nvals == m_vGates[in[i]].nvals);
 	}
 	return currentGateId();
 }
@@ -464,8 +464,8 @@ uint32_t ABYCircuit::PutTruthTableGate(std::vector<uint32_t> in, uint32_t rounds
 		uint64_t* truth_table) {
 	GATE* gate = InitGate(G_TT, in);
 
-	assert(in.size() < 32);
-	assert(in.size() > 0);
+	precondition_assert(in.size() < 32);
+	precondition_assert(in.size() > 0);
 	uint32_t tt_len = 1<<(in.size());
 
 	gate->gs.tt.noutputs = out_bits;
@@ -476,7 +476,7 @@ uint32_t ABYCircuit::PutTruthTableGate(std::vector<uint32_t> in, uint32_t rounds
 
 	gate->nvals = m_vGates[in[0]].nvals*out_bits;
 	for(uint32_t i = 1; i < in.size(); i++) {
-		assert(gate->nvals/out_bits == m_vGates[in[i]].nvals);
+		precondition_assert(gate->nvals/out_bits == m_vGates[in[i]].nvals);
 	}
 
 #ifdef DEBUGBOOL_NO_MT
@@ -497,7 +497,7 @@ uint32_t ABYCircuit::PutPrintValGate(std::vector<uint32_t> in, std::string infos
 
 	gate->nvals = m_vGates[in[0]].nvals;
 	for(uint32_t i = 1; i < in.size(); i++) {
-		assert(gate->nvals == m_vGates[in[i]].nvals);
+		precondition_assert(gate->nvals == m_vGates[in[i]].nvals);
 	}
 
 	// buffer is freed in Sharing::EvaluatePrintValGate
@@ -515,7 +515,7 @@ uint32_t ABYCircuit::PutAssertGate(std::vector<uint32_t> in, uint32_t bitlen, UG
 
 	gate->nvals = m_vGates[in[0]].nvals;
 	for(uint32_t i = 1; i < in.size(); i++) {
-		assert(gate->nvals == m_vGates[in[i]].nvals);
+		precondition_assert(gate->nvals == m_vGates[in[i]].nvals);
 	}
 
 	//initialize a new block of memory and copy the assert_val into this block
@@ -532,7 +532,7 @@ uint32_t ABYCircuit::PutAssertGate(std::vector<uint32_t> in, uint32_t bitlen, UG
 		uint64_t* truth_table) {
 	std::vector<uint32_t> out(out_bits);
 	uint64_t offset = ceil_divide((1<<in.size()), sizeof(uint64_t) * 8);
-	assert(in.size() > 5);//Safety check for at least 64 truth table bits during development. Can be deleted but there needs to be a note that the next element is padded to the next multiple of 64
+	precondition_assert(in.size() > 5);//Safety check for at least 64 truth table bits during development. Can be deleted but there needs to be a note that the next element is padded to the next multiple of 64
 
 
 	//for(uint32_t i = 0; i < out_bits; i++) {
@@ -710,7 +710,7 @@ void ABYCircuit::ExportGateInBristolFormat(uint32_t gateid, uint32_t& next_gate_
 			gate_id_map[gateid] = next_gate_id++;
 		}
 	} else if(m_vGates[gateid].type == G_CONSTANT) {
-		assert(m_vGates[gateid].gs.constval == 0 || m_vGates[gateid].gs.constval == 1);
+		precondition_assert(m_vGates[gateid].gs.constval == 0 || m_vGates[gateid].gs.constval == 1);
 		constant_map[gateid] = m_vGates[gateid].gs.constval;
 	} else if(m_vGates[gateid].type == G_OUT) {
 		//Ignore input gates
@@ -784,7 +784,7 @@ void ABYCircuit::CheckAndPropagateConstant(uint32_t gateid, uint32_t& next_gate_
 		return;
 	}
 	//The code must have stopped before from one of the conditions
-	assert(false);
+	precondition_assert(false);
 	//std::cout << "Ran through code and missed something for " << constant_map[m_vGates[gateid].ingates.inputs.twin.left] << ", " <<  constant_map[m_vGates[gateid].ingates.inputs.twin.right] << std::endl;
 }
 

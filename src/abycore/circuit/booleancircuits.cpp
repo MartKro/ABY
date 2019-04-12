@@ -528,7 +528,7 @@ uint32_t BooleanCircuit::PutY2BCONVGate(uint32_t parentid) {
 	m_vGates[gateid].depth++;
 	UpdateLocalQueue(gateid);
 	//a Y input gate cannot be parent to a Y2B gate. Alternatively, put a Boolean input gate
-	assert(m_vGates[parentid].type != G_IN);
+	precondition_assert(m_vGates[parentid].type != G_IN);
 
 	return gateid;
 }
@@ -546,8 +546,8 @@ uint32_t BooleanCircuit::PutB2YCONVGate(uint32_t parentid) {
 
 uint32_t BooleanCircuit::PutYSwitchRolesGate(uint32_t parentid) {
 	std::vector<uint32_t> in(1, parentid);
-	assert(m_eContext == S_YAO || m_eContext == S_YAO_REV);
-	assert(m_vGates[in[0]].context != m_eContext);
+	precondition_assert(m_eContext == S_YAO || m_eContext == S_YAO_REV);
+	precondition_assert(m_vGates[in[0]].context != m_eContext);
 	uint32_t gateid = m_cCircuit->PutCONVGate(in, 2, m_eContext, m_nShareBitLen);
 	UpdateInteractiveQueue(gateid);
 
@@ -716,7 +716,7 @@ share* BooleanCircuit::PutCallbackGate(share* in, uint32_t rounds, void (*callba
 
 std::vector<uint32_t> BooleanCircuit::PutTruthTableMultiOutputGate(std::vector<uint32_t> in, uint32_t out_bits,
 		uint64_t* ttable) {
-	//assert(m_eContext == S_BOOL_NO_MT);
+	//precondition_assert(m_eContext == S_BOOL_NO_MT);
 
 	//uint32_t tmpgate = m_cCircuit->PutTruthTableGate(in, 1, out_bits, ttable);
 	//UpdateInteractiveQueue(tmpgate);
@@ -725,7 +725,7 @@ std::vector<uint32_t> BooleanCircuit::PutTruthTableMultiOutputGate(std::vector<u
 	//ttable = transposeTT(1<<in.size(), out_bits, ttable);
 	uint32_t tmpgate = PutTruthTableGate(in, out_bits, ttable);
 	std::vector<uint32_t> bitlens(out_bits, m_vGates[in[0]].nvals);
-	//assert(out_bits <= 8);
+	//precondition_assert(out_bits <= 8);
 
 	std::vector<uint32_t> output = m_cCircuit->PutSplitterGate(tmpgate, bitlens);
 	for(uint32_t i = 0; i < output.size(); i++) {
@@ -741,7 +741,7 @@ share* BooleanCircuit::PutTruthTableMultiOutputGate(share* in, uint32_t output_b
 
 uint32_t BooleanCircuit::PutTruthTableGate(std::vector<uint32_t> in, uint32_t out_bits, uint64_t* ttable) {
 
-	assert(m_eContext == S_SPLUT || m_eContext == S_BOOL);
+	precondition_assert(m_eContext == S_SPLUT || m_eContext == S_BOOL);
 	uint32_t gateid = m_cCircuit->PutTruthTableGate(in, 1, out_bits, ttable);
 	UpdateTruthTableSizes(1<<in.size(), gateid, out_bits);
 
@@ -879,7 +879,7 @@ share* BooleanCircuit::PutLeftShifterGate(share* in, uint32_t pos) {
 
 //shift val by pos positions to the left and fill lower wires with zeros
 std::vector<uint32_t> BooleanCircuit::PutLeftShifterGate(std::vector<uint32_t> val, uint32_t max_bitlen, uint32_t pos, uint32_t nvals) {
-	assert(pos < max_bitlen); // cannot shift beyond last bit
+	precondition_assert(pos < max_bitlen); // cannot shift beyond last bit
 	uint32_t zerogate = PutConstantGate(0, nvals);
 	std::vector<uint32_t> out(pos, zerogate);
 	uint32_t newsize = pos + val.size();
@@ -894,7 +894,7 @@ std::vector<uint32_t> BooleanCircuit::PutLeftShifterGate(std::vector<uint32_t> v
 // sharing.
 uint32_t BooleanCircuit::PutUniversalGateCircuit(uint32_t a, uint32_t b, uint32_t op_id) {
 	uint32_t nvals = std::max(m_vGates[a].nvals, m_vGates[b].nvals);
-	assert(nvals <= 32);
+	precondition_assert(nvals <= 32);
 
 	uint32_t mask = 0xFFFFFFFF;
 	uint32_t c0 = PutConstantGate((op_id & 0x01) * mask, nvals);
@@ -1637,7 +1637,7 @@ uint32_t BooleanCircuit::PutLUTGTGate(std::vector<uint32_t> a, std::vector<uint3
 	std::vector<uint32_t> lut_ins, tmp;
 
 	//copy a and b into an internal state
-	assert(a.size() == b.size());
+	precondition_assert(a.size() == b.size());
 	std::vector<uint32_t> state(a.size() + b.size());
 	for(uint32_t i = 0; i < a.size(); i++) {
 		state[2*i] = a[i];
@@ -1650,7 +1650,7 @@ uint32_t BooleanCircuit::PutLUTGTGate(std::vector<uint32_t> a, std::vector<uint3
 		nins = std::min(maxins, (uint32_t) state.size() - i);
 
 		//nins should always be a multiple of two
-		assert((nins & 0x01) == 0);
+		precondition_assert((nins & 0x01) == 0);
 		lut_ins.clear();
 		lut_ins.assign(state.begin() + i, state.begin() + i + nins);
 		tmp = PutTruthTableMultiOutputGate(lut_ins, 2, (uint64_t*) m_vLUT_GT_IN[(nins/2)-1]);
@@ -2298,7 +2298,7 @@ std::vector<uint32_t> BooleanCircuit::PutGateFromFile(const std::string filename
 				switch (line.at(0)) {
 
 				case 'S': // Server input wire ids
-					assert(inputs.size() >= tokens.size() + file_input_size);
+					precondition_assert(inputs.size() >= tokens.size() + file_input_size);
 
 					for (uint32_t i = 0; i < tokens.size(); i++) {
 						wires[tokens[i]] = inputs[i + file_input_size];
@@ -2307,7 +2307,7 @@ std::vector<uint32_t> BooleanCircuit::PutGateFromFile(const std::string filename
 					break;
 
 				case 'C': // Client input wire ids
-					assert(inputs.size() >= tokens.size() + file_input_size);
+					precondition_assert(inputs.size() >= tokens.size() + file_input_size);
 
 					for (uint32_t i = 0; i < tokens.size(); i++) {
 						wires[tokens[i]] = inputs[i + file_input_size];
@@ -2437,7 +2437,7 @@ std::vector<uint32_t> BooleanCircuit::PutUniversalCircuitFromFile(const std::str
 			switch (line.at(0)) {
 
 			case 'C': // Client input wire ids
-				assert(p2inputs.size() >= tokens.size() + file_input_size - 1);
+				precondition_assert(p2inputs.size() >= tokens.size() + file_input_size - 1);
 				#ifdef DEBUG_UC
 							std::cout << "Client Input Wire IDs " ;
 				#endif
@@ -2587,7 +2587,7 @@ std::vector<uint32_t> BooleanCircuit::PutLUTGateFromFile(const std::string filen
 				switch (line.at(0)) {
 
 				case 'I': // map the input wires to the gate
-					assert(inputs.size() == tokens.size());
+					precondition_assert(inputs.size() == tokens.size());
 
 					//std::cout << "Input wires to Gate: ";
 					for (uint32_t i = 0; i < tokens.size(); i++) {
@@ -2753,7 +2753,7 @@ void BooleanCircuit::PutMultiMUXGate(share** Sa, share** Sb, share* sel, uint32_
 	uint32_t nvals = m_vGates[sel->get_wire_id(0)].nvals;
 
 	//Yao not allowed, if so just put standard muxes
-	assert(m_eContext == S_BOOL);
+	precondition_assert(m_eContext == S_BOOL);
 
 	for(uint32_t i = 0; i < nshares; i++) {
 		bitlen += Sa[i]->get_bitlength();

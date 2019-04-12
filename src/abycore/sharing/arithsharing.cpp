@@ -733,7 +733,7 @@ void ArithSharing<T>::AssignServerConversionShares() {
 				", A: " << m_vConversionMasks[clientpermbit].template Get<T>(gctr) << ", " << tmpa <<
 				", B: " << m_vConversionMasks[!clientpermbit].template Get<T>(gctr) << ", " << tmpb << ", tmpsum = " << tmpsum[k] << ", gctr = " << gctr << std::endl;
 				//std::cout << "gctr = " << gctr << ", nconvmasks = " << m_vConversionMasks[clientpermbit].GetSize() <<", nconvgates = " << m_nNumCONVs << std::endl;
-				assert(nvals == 1); // FIXME stupid assertion in debugging
+				precondition_assert(nvals == 1); // FIXME stupid assertion in debugging
 #endif
 
 				m_vConvShareSndBuf.template Set<T>(tmpa, 2 * lctr);
@@ -1141,7 +1141,7 @@ void ArithSharing<T>::PrintPerformanceStatistics() {
 
 template<typename T>
 void ArithSharing<T>::Reset() {
-	assert(m_cArithCircuit->GetNumCONVGates() == m_nConvShareIdx);
+	precondition_assert(m_cArithCircuit->GetNumCONVGates() == m_nConvShareIdx);
 	m_nMTs = 0;
 
 	for (uint32_t i = 0; i < m_vMTStartIdx.size(); i++)

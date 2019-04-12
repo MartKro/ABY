@@ -26,6 +26,7 @@
 #include "../sharing/splut.h"
 #include "../sharing/yaoclientsharing.h"
 #include "../sharing/yaoserversharing.h"
+#include "../ABY_utils/asserthandling.h"
 #include <ENCRYPTO_utils/crypto/crypto.h>
 #include <ENCRYPTO_utils/connection.h>
 #include <ENCRYPTO_utils/thread.h>
@@ -35,7 +36,6 @@
 #include <sstream>
 
 #ifdef _DEBUG
-#include <cassert>
 #endif
 
 class ABYParty::CPartyWorkerThread: public CThread {
@@ -467,7 +467,7 @@ BOOL ABYParty::ThreadReceiveValues() {
 		}
 	}
 	uint8_t* rcvbuftotal = (uint8_t*) malloc(rcvbytestotal);
-	assert(rcvbuftotal != NULL);
+	precondition_assert(rcvbuftotal != NULL);
 	//gettimeofday(&tstart, NULL);
 	if (rcvbytestotal > 0) {
 		//m_vSockets[2]->Receive(rcvbuftotal, rcvbytestotal);

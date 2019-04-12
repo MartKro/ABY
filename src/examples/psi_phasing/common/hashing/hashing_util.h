@@ -9,8 +9,8 @@
 #define HASHING_UTIL_H_
 
 #include "../hashing_includes.h"
+#include "../../../../abycore/ABY_utils/asserthandling.h"
 #include <math.h>
-#include <cassert>
 #include <cstring>
 
 typedef uint16_t TABLEID_T;

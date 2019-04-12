@@ -325,7 +325,7 @@ BOOL YaoClientSharing::EvaluateGarbledTable(GATE* gate, uint32_t pos, GATE* glef
 	lpbit = lkey[m_nSecParamBytes-1] & 0x01;
 	rpbit = rkey[m_nSecParamBytes-1] & 0x01;
 
-	assert(lpbit < 2 && rpbit < 2);
+	precondition_assert(lpbit < 2 && rpbit < 2);
 
 	EncryptWire(m_vTmpEncBuf[0], lkey, KEYS_PER_GATE_IN_TABLE*m_nGarbledTableCtr);
 	EncryptWire(m_vTmpEncBuf[1], rkey, KEYS_PER_GATE_IN_TABLE*m_nGarbledTableCtr+1);
@@ -477,7 +477,7 @@ void YaoClientSharing::ReceiveServerKeys(uint32_t gateid) {
 void YaoClientSharing::EvaluateConversionGate(uint32_t gateid) {
 	GATE* gate = &(m_vGates[gateid]);
 	GATE* parent = &(m_vGates[gate->ingates.inputs.parents[0]]);
-	assert(parent->instantiated);
+	precondition_assert(parent->instantiated);
 	UGATE_T* val = parent->gs.val;
 
 	if (parent->context == S_ARITH && (gate->gs.pos & 0x01) == 0) {

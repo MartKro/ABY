@@ -18,9 +18,9 @@
 
 #include "phasing_circuit.h"
 #include "../../../abycore/sharing/sharing.h"
+#include "../../../abycore/ABY_utils/asserthandling.h"
 
 #include <math.h>
-#include <cassert>
 
 int32_t test_phasing_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t server_neles, uint32_t client_neles, uint32_t bitlen, double epsilon, uint32_t nthreads,
@@ -30,7 +30,7 @@ int32_t test_phasing_circuit(e_role role, const std::string& address, uint16_t p
 	uint32_t *srv_set, *cli_set, *circ_intersect, *ver_intersect, *inv_perm, *stashperm;
 	uint32_t ver_inter_ctr = 0, circ_inter_ctr = 0, internalbitlen, maxstashsize;
 	share **shr_srv_hash_table, *shr_cli_hash_table, *shr_out, *shr_srv_set, **shr_cli_stash, *shr_stash_out;
-	assert(bitlen <= 32);
+	precondition_assert(bitlen <= 32);
 	uint32_t nbins = ceil(epsilon * client_neles);
 	uint8_t *client_hash_table, *server_hash_table, *stash;
 	timespec t_start, t_end;
@@ -42,7 +42,7 @@ int32_t test_phasing_circuit(e_role role, const std::string& address, uint16_t p
 	std::vector<Sharing*>& sharings = party->GetSharings();
 
 	BooleanCircuit* circ = (BooleanCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
-	assert(circ->GetCircuitType() == C_BOOLEAN);
+	precondition_assert(circ->GetCircuitType() == C_BOOLEAN);
 
 	crypto* crypt = new crypto(seclvl.symbits, (uint8_t*) const_seed);
 
@@ -189,9 +189,9 @@ int32_t test_phasing_circuit(e_role role, const std::string& address, uint16_t p
 		for(uint32_t i = 0; i < circ_inter_ctr; i++) {
 			std::cout << "Circuit " << i << ": " << (hex) << circ_intersect[i] << (dec) << std::endl;
 		}*/
-		assert(circ_inter_ctr == ver_inter_ctr);
+		verify_assert(circ_inter_ctr == ver_inter_ctr);
 		for(uint32_t i = 0; i < circ_inter_ctr; i++) {
-			assert(ver_intersect[i] == circ_intersect[i]);
+			verify_assert(ver_intersect[i] == circ_intersect[i]);
 		}
 		free(output);
 	}

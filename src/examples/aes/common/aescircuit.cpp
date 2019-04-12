@@ -23,8 +23,13 @@
 int32_t test_aes_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads,
 		e_mt_gen_alg mt_alg, e_sharing sharing, bool verbose, bool use_vec_ands, bool expand_in_sfe, bool client_only) {
 	uint32_t bitlen = 32;
-	uint32_t aes_key_bits;
 	ABYParty* party = new ABYParty(role, address, port, seclvl, bitlen, nthreads, mt_alg, 4000000);
+	return test_instanziated_aes_circuit(role, party, seclvl, nvals, sharing, verbose, use_vec_ands, expand_in_sfe, client_only);
+}
+
+int32_t test_instanziated_aes_circuit(e_role role, ABYParty* party, seclvl seclvl, uint32_t nvals, e_sharing sharing, bool verbose, bool use_vec_ands, bool expand_in_sfe, bool client_only) {
+
+	uint32_t aes_key_bits;
 	std::vector<Sharing*>& sharings = party->GetSharings();
 
 	crypto* crypt = new crypto(seclvl.symbits, (uint8_t*) const_seed);
@@ -59,7 +64,7 @@ int32_t test_aes_circuit(e_role role, const std::string& address, uint16_t port,
 
 	if(sharing == S_YAO_REV) {
 		//Currently the expand_in_sfe and client_only features are not supported in S_YAO_REV
-		assert(expand_in_sfe == false && client_only == false);
+		precondition_assert(expand_in_sfe == false && client_only == false);
 
 		Circuit* yao_circ = sharings[S_YAO]->GetCircuitBuildRoutine();
 		Circuit* yao_rev_circ = sharings[S_YAO_REV]->GetCircuitBuildRoutine();
@@ -100,7 +105,7 @@ int32_t test_aes_circuit(e_role role, const std::string& address, uint16_t port,
 	} else {
 		Circuit* circ = sharings[sharing]->GetCircuitBuildRoutine();
 		//Circuit build routine works for Boolean circuits only right now
-		assert(circ->GetCircuitType() == C_BOOLEAN);
+		precondition_assert(circ->GetCircuitType() == C_BOOLEAN);
 
 		share *s_in, *s_key, *s_ciphertext;
 		s_in = circ->PutSIMDINGate(nvals, input.GetArr(), aes_key_bits, CLIENT);
@@ -146,7 +151,7 @@ int32_t test_aes_circuit(e_role role, const std::string& address, uint16_t port,
 			verify.PrintHex(i * AES_BYTES, (i + 1) * AES_BYTES);
 		}
 #endif
-		assert(verify.IsEqual(out, i*AES_BITS, (i+1)*AES_BITS));
+		verify_assert(verify.IsEqual(out, i*AES_BITS, (i+1)*AES_BITS));
 	}
 #ifndef BATCH
 	std::cout << "all tests succeeded" << std::endl;
@@ -716,7 +721,7 @@ std::vector<uint32_t> AESSBox_Forward_SPLUT(std::vector<uint32_t> input, Boolean
 share* BuildKeyExpansion(share* key, BooleanCircuit* circ, bool use_vec_ands) {
 
 	//TODO make the function SIMD-able if multiple keys are needed
-	assert(key->get_nvals() == 1);
+	precondition_assert(key->get_nvals() == 1);
 
 	//During the function the representation of the extended key is bytewise
 	std::vector<std::vector<uint32_t>> ex_key_vec(AES_EXP_KEY_BYTES, std::vector<uint32_t>(8));

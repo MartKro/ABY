@@ -18,8 +18,8 @@
 #include "sharing.h"
 #include "../circuit/circuit.h"
 #include "../circuit/abycircuit.h"
+#include "../ABY_utils/asserthandling.h"
 #include <ENCRYPTO_utils/crypto/crypto.h>
-#include <cassert>
 #include <cstring>
 #include <cstdlib>
 
@@ -125,8 +125,8 @@ UGATE_T* Sharing::ReadOutputValue(uint32_t gateid, e_circuit circ_type, uint32_t
 
 			for (uint32_t i = 0; i < *bitlen; i++) {
 				parentgate = &(m_vGates[gate->ingates.inputs.parents[i]]);
-				assert(parentgate->nvals == nvals);
-				assert(parentgate->instantiated);
+				precondition_assert(parentgate->nvals == nvals);
+				precondition_assert(parentgate->instantiated);
 
 				for (uint32_t j = 0; j < nvals; j++) {
 					value[i / GATE_T_BITS + j * val_offset] += (((parentgate->gs.val[j/GATE_T_BITS] >> (j % GATE_T_BITS)) & 0x01) << (i % GATE_T_BITS));
@@ -170,7 +170,7 @@ void Sharing::EvaluateAssertGate(uint32_t gateid, e_circuit circ_type) {
 			std::cout << "Data in Assert gate is not matching for nval = " << i << ": Circuit " << value[i] <<
 					" vs. Reference " << m_vGates[gateid].gs.assertval[i] << std::endl;
 		}
-		assert(m_vGates[gateid].gs.assertval[i] == value[i]);
+		verify_assert(m_vGates[gateid].gs.assertval[i] == value[i]);
 	}
 
 	free(value);

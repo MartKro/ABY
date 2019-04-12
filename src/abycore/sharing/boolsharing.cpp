@@ -770,7 +770,7 @@ inline void BoolSharing::EvaluateCONVGate(uint32_t gateid) {
 	uint32_t parentid = gate->ingates.inputs.parents[0];
 	if (m_vGates[parentid].context == S_ARITH)
 		std::cerr << "can't convert from arithmetic representation directly into Boolean" << std::endl;
-	assert(m_vGates[parentid].context == S_YAO);
+	precondition_assert(m_vGates[parentid].context == S_YAO);
 	InstantiateGate(gate);
 
 	memset(gate->gs.val, 0, ceil_divide(gate->nvals, 8));
@@ -794,7 +794,7 @@ inline void BoolSharing::EvaluateCONVGate(uint32_t gateid) {
 inline void BoolSharing::ReconstructValue(uint32_t gateid) {
 	GATE* gate = &(m_vGates[gateid]);
 	uint32_t parentid = gate->ingates.inputs.parent;
-	assert(m_vGates[parentid].instantiated);
+	precondition_assert(m_vGates[parentid].instantiated);
 	for (uint32_t i = 0, bitstocopy = gate->nvals, len; i < ceil_divide(gate->nvals, GATE_T_BITS); i++, bitstocopy -= GATE_T_BITS) {
 		len = std::min(bitstocopy, (uint32_t) GATE_T_BITS);
 #ifdef DEBUGBOOL
@@ -882,7 +882,7 @@ inline void BoolSharing::SelectiveOpenOPLUT(uint32_t gateid) {
 #ifdef DEBUGBOOL
 	std::cout << "Evaluating LUT with " << nparents << " input wires and " << outbits << " output wires" << std::endl;
 #endif
-	assert(m_vOP_LUT_data.find(op_lut_id) != m_vOP_LUT_data.end());
+	precondition_assert(m_vOP_LUT_data.find(op_lut_id) != m_vOP_LUT_data.end());
 	op_lut_ctx* lut_ctx = m_vOP_LUT_data.find(op_lut_id)->second;
 
 	//Get the shares on the input wires

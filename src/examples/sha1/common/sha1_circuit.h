@@ -21,9 +21,8 @@
 
 #include "../../../abycore/circuit/circuit.h"
 #include "../../../abycore/aby/abyparty.h"
+#include "../../../abycore/ABY_utils/asserthandling.h"
 #include <ENCRYPTO_utils/crypto/crypto.h>
-#include <cassert>
-
 class BooleanCircuit;
 
 #define ABY_SHA1_INPUT_BITS 512

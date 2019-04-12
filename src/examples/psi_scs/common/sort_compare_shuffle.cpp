@@ -18,9 +18,9 @@
 
 #include "sort_compare_shuffle.h"
 #include "../../../abycore/sharing/sharing.h"
+#include "../../../abycore/ABY_utils/asserthandling.h"
 
 #include <math.h>
-#include <cassert>
 using namespace std;
 #define BUILD_WAKSMAN
 
@@ -33,7 +33,7 @@ int32_t test_psi_scs_circuit(e_role role, const std::string& address, uint16_t p
 	uint32_t seqsize = 2* neles, ver_inter_ctr = 0, circ_inter_ctr = 0;
 	uint32_t nswapgates = estimateGates(neles);
 	share **shr_server_set, **shr_client_set, **shr_out;
-	assert(bitlen <= 32);
+	precondition_assert(bitlen <= 32);
 	uint64_t mask = ((uint64_t) 1 << bitlen)-1;
 
 	e_sharing sort, permute;
@@ -61,7 +61,7 @@ int32_t test_psi_scs_circuit(e_role role, const std::string& address, uint16_t p
 	BooleanCircuit* sortcirc = (BooleanCircuit*) sharings[sort]->GetCircuitBuildRoutine();
 	BooleanCircuit* permcirc = (BooleanCircuit*) sharings[permute]->GetCircuitBuildRoutine();
 
-	assert(sortcirc->GetCircuitType() == C_BOOLEAN && permcirc->GetCircuitType() == C_BOOLEAN);
+	precondition_assert(sortcirc->GetCircuitType() == C_BOOLEAN && permcirc->GetCircuitType() == C_BOOLEAN);
 
 	srv_set = (uint32_t*) malloc(sizeof(uint32_t) * neles);
 	cli_set = (uint32_t*) malloc(sizeof(uint32_t) * neles);
@@ -147,9 +147,9 @@ int32_t test_psi_scs_circuit(e_role role, const std::string& address, uint16_t p
 		//	cout << "Circuit " << i << ": " << (hex) << circ_intersect[i] << (dec) << endl;
 		//}
 		if(verify) {
-			assert(circ_inter_ctr == ver_inter_ctr);
+			verify_assert(circ_inter_ctr == ver_inter_ctr);
 			for(uint32_t i = 0; i < ver_inter_ctr; i++) {
-				assert(ver_intersect[i] == circ_intersect[i]);
+				verify_assert(ver_intersect[i] == circ_intersect[i]);
 			}
 		}
 		//cout << "Intersection of size " << circ_inter_ctr << " correctly computed" << endl;

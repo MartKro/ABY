@@ -1,5 +1,7 @@
 # [ABY](http://encrypto.de/papers/DSZ15.pdf) [![Build Status](https://travis-ci.org/encryptogroup/ABY.svg?branch=public)](https://travis-ci.org/encryptogroup/ABY)
 
+### WARNING
+This branch is work in progress and very unstable. The comments in () at the testing description don't work yet.
 
 ### A Framework for Efficient Mixed-Protocol Secure Two-Party Computation
 
@@ -117,10 +119,18 @@ system for these libraries.
 
 ###### Test Executables and Example Applications
 
-To build the ABY test and benchmark executables as well as the bundled example
+To build the benchmark executables as well as the bundled example
 applications, you use the `ABY_BUILD_EXE` option:
 ```
 cmake .. -DABY_BUILD_EXE=On
+```
+
+To build the ABY test you use the `ABY_BUILD_EXE` option, and also the `ABY_BUILD_EXE`
+if you want to test the applications:
+```
+cmake .. -DABY_BUILD_TESTS=On
+
+cmake .. -DABY_BUILD_TESTS=On -DABY_BUILD_EXE=On
 ```
 
 ###### Build Options
@@ -212,6 +222,15 @@ Also, see the [online doxygen documentation of ABY](http://encryptogroup.github.
   * **Example:** The Millionaire's problem requires to specify the role of the executing party. All other parameters will use default values if they are not set. You execute it locally with: `./millionaire_prob.exe -r 0` and `./millionaire_prob.exe -r 1`, each in a separate terminal.
   * You should get some debug output for you to verify the correctness of the computation.
   * Performance statistics can be turned on setting `#define PRINT_PERFORMANCE_STATS 1` in `src/abycore/ABY_utils/ABYconstants.h` in [line 32](https://github.com/encryptogroup/ABY/blob/public/src/abycore/ABY_utils/ABYconstants.h#L32).
+
+#### Testing the ABY Framework with the Google Test framework
+* To test the framework using Google Test you have build ABY as described above and set the
+  `-DABY_BUILD_TESTS=On` option and set the `-DABY_BUILD_EXE=On` option if you also want to test the examples.
+* After building the framework to run the tests you can use `ctest` in the build directory to call the tests.
+* If you want to have more information on the tests you can also call the specific tests `./operations_test` or `./examples_test` in `bin/` inside the build directory.
+* Unlike the applications you don't need to run two instances with separate terminals of the test. The tests will handle it for you.
+* You can only test locally.
+* The tests are not intended to be used as benchmarking since they run some optimizations which improve the speed of the tests, but are not realistic if the tests are run separately.
 
 #### Creating and Building your own ABY Application
 * To get an idea how to create a simple ABY application, you can follow the

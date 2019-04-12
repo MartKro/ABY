@@ -21,9 +21,9 @@
 #define CIRCUIT_H_
 
 #include "abycircuit.h"
+#include "../ABY_utils/asserthandling.h"
 #include <functional>
 
-#include <cassert>
 #include <deque>
 #include <iostream>
 #include <string>
@@ -219,12 +219,12 @@ public:
 	UGATE_T* GetOutputGateValue(uint32_t gateid);
 	uint32_t GetOutputGateValue(uint32_t gateid, UGATE_T*& outval);
 	template<class T> void GetOutputGateValueT(uint32_t gateid, T& val) {
-		assert(sizeof(T) * 8 >= m_vGates[gateid].nvals * m_nShareBitLen);
+		precondition_assert(sizeof(T) * 8 >= m_vGates[gateid].nvals * m_nShareBitLen);
 		val = *((T*) m_vGates[gateid].gs.val);
 	}
 
 	uint32_t GetNumVals(uint32_t gateid) {
-		assert(gateid < m_cCircuit->GetGateHead());
+		precondition_assert(gateid < m_cCircuit->GetGateHead());
 		return m_vGates[gateid].nvals;
 	}
 

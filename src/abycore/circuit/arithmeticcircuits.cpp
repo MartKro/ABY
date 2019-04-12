@@ -257,14 +257,14 @@ uint32_t ArithmeticCircuit::PutCONVGate(std::vector<uint32_t> parentids) {
 
 //TODO: use bitlen in PutConstantGate
 share* ArithmeticCircuit::PutCONSGate(UGATE_T val, uint32_t bitlen) {
-	assert(bitlen <= m_nShareBitLen);
+	precondition_assert(bitlen <= m_nShareBitLen);
 	std::vector<uint32_t> gateid(1);
 	gateid[0] = PutConstantGate(val, 1);
 	return new arithshare(gateid, this);
 }
 
 share* ArithmeticCircuit::PutSIMDCONSGate(uint32_t nvals, UGATE_T val, uint32_t bitlen) {
-	assert(bitlen <= m_nShareBitLen);
+	precondition_assert(bitlen <= m_nShareBitLen);
 	std::vector<uint32_t> gateid(1);
 	gateid[0] = PutConstantGate(val, nvals);
 	return new arithshare(gateid, this);

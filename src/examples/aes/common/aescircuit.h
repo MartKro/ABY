@@ -21,8 +21,8 @@
 
 #include "../../../abycore/circuit/circuit.h"
 #include "../../../abycore/aby/abyparty.h"
+#include "../../../abycore/ABY_utils/asserthandling.h"
 #include <ENCRYPTO_utils/crypto/crypto.h>
-#include <cassert>
 
 class BooleanCircuit;
 
@@ -172,6 +172,8 @@ void verify_AES_encryption(uint8_t* input, uint8_t* key, uint32_t nvals, uint8_t
  \param		client_only if true both the key and the values will be inputted by the client; default is false
 */
 int32_t test_aes_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl, uint32_t nvals, uint32_t nthreads, e_mt_gen_alg mt_alg, e_sharing sharing, bool verbose = false, bool use_vec_ands = false, bool expand_in_sfe = false, bool client_only = false);
+
+int32_t test_instanziated_aes_circuit(e_role role, ABYParty* party, seclvl seclvl, uint32_t nvals, e_sharing sharing, bool verbose = false, bool use_vec_ands = false, bool expand_in_sfe = false, bool client_only = false);
 /**
  \param		key the key to be expanded
  \param		roundKey the result as the expansion of the small key. WARNING: This function uses call by reference,

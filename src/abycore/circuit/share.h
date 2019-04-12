@@ -21,7 +21,7 @@
 
 #include "circuit.h"
 #include "../ABY_utils/ABYconstants.h"
-#include <cassert>
+#include "../ABY_utils/asserthandling.h"
 #include <cstdint>
 #include <vector>
 

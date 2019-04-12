@@ -275,7 +275,7 @@ void YaoServerSharing::SendConversionValues(uint32_t gateid) {
 	std::cout << "Evaluating A2Y with gateid = " << gateid << ", parent = " <<
 			gate->ingates.inputs.parents[0] << ", pos = " << pos;
 #endif
-	assert(parent->instantiated);
+	precondition_assert(parent->instantiated);
 
 	//Convert server's share
 	if ((pos & 0x01) == 0) {
@@ -371,7 +371,7 @@ void YaoServerSharing::PrecomputeGC(std::deque<uint32_t>& queue, ABYSetup* setup
 		std::cout << "Evaluating gate with id = " << queue[i] << ", and type = "<< get_gate_type_name(gate->type) << "(" << gate->type << "), depth = " << gate->depth
 		<< ", nvals = " << gate->nvals << ", sharebitlen = " << gate->sharebitlen << std::endl;
 #endif
-		assert(gate->nvals > 0 && gate->sharebitlen == 1);
+		precondition_assert(gate->nvals > 0 && gate->sharebitlen == 1);
 
 		if (gate->type == G_LIN) {
 			EvaluateXORGate(gate);
@@ -437,12 +437,12 @@ void YaoServerSharing::PrecomputeGC(std::deque<uint32_t>& queue, ABYSetup* setup
 void YaoServerSharing::EvaluateInversionGate(GATE* gate) {
 	uint32_t parentid = gate->ingates.inputs.parent;
 	InstantiateGate(gate);
-	assert((gate - m_vGates.data()) > parentid);
+	precondition_assert((gate - m_vGates.data()) > parentid);
 	memcpy(gate->gs.yinput.outKey, m_vGates[parentid].gs.yinput.outKey, m_nSecParamBytes * gate->nvals);
 	for (uint32_t i = 0; i < gate->nvals; i++) {
 		gate->gs.yinput.pi[i] = m_vGates[parentid].gs.yinput.pi[i] ^ 0x01;
 
-		assert(gate->gs.yinput.pi[i] < 2 && m_vGates[parentid].gs.yinput.pi[i] < 2);
+		precondition_assert(gate->gs.yinput.pi[i] < 2 && m_vGates[parentid].gs.yinput.pi[i] < 2);
 
 	}
 	UsedGate(parentid);
@@ -564,13 +564,13 @@ void YaoServerSharing::EvaluateXORGate(GATE* gate) {
 	BYTE* gkey = gate->gs.yinput.outKey;
 
 #ifdef GATE_INST_FLAG
-	assert(m_vGates[idleft].instantiated);
-	assert(m_vGates[idright].instantiated);
+	precondition_assert(m_vGates[idleft].instantiated);
+	precondition_assert(m_vGates[idright].instantiated);
 #endif
 	for (uint32_t g = 0; g < gate->nvals; g++, gpi++, lpi++, rpi++, lkey += m_nSecParamBytes, rkey += m_nSecParamBytes, gkey += m_nSecParamBytes) {
 		*gpi = *lpi ^ *rpi;
 		m_pKeyOps->XOR(gkey, lkey, rkey);
-		assert(*gpi < 2);
+		precondition_assert(*gpi < 2);
 	}
 
 #ifdef DEBUGYAOSERVER
@@ -582,7 +582,7 @@ void YaoServerSharing::EvaluateXORGate(GATE* gate) {
 	std::cout << " (" << (uint32_t) m_vGates[idright].gs.yinput.pi[0] << ")(" << idright << ")" << std::endl;
 #endif
 
-	assert(m_vGates[idleft].gs.yinput.pi[0] < 2 && m_vGates[idright].gs.yinput.pi[0] < 2);
+	precondition_assert(m_vGates[idleft].gs.yinput.pi[0] < 2 && m_vGates[idright].gs.yinput.pi[0] < 2);
 	UsedGate(idleft);
 	UsedGate(idright);
 }
@@ -600,7 +600,7 @@ void YaoServerSharing::EvaluateANDGate(GATE* gate, ABYSetup* setup) {
 	for(uint32_t g = 0; g < gate->nvals; g++) {
 		CreateGarbledTable(gate, g, gleft, gright);
 		m_nGarbledTableCtr++;
-		assert(gate->gs.yinput.pi[g] < 2);
+		precondition_assert(gate->gs.yinput.pi[g] < 2);
 
 	}
 
@@ -625,7 +625,7 @@ void YaoServerSharing::CreateGarbledTable(GATE* ggate, uint32_t pos, GATE* gleft
 	uint8_t rpbit = gright->gs.yinput.pi[pos];
 	uint8_t lsbit, rsbit;
 
-	assert(lpbit < 2 && rpbit < 2);
+	precondition_assert(lpbit < 2 && rpbit < 2);
 
 	table = m_vGarbledCircuit.GetArr() + m_nGarbledTableCtr * KEYS_PER_GATE_IN_TABLE * m_nSecParamBytes;
 	outwire_key = ggate->gs.yinput.outKey + pos * m_nSecParamBytes;
@@ -730,7 +730,7 @@ void YaoServerSharing::EvaluateUniversalGate(GATE* gate) {
 		GarbleUniversalGate(gate, g, gleft, gright, ttable);
 		m_nUniversalGateTableCtr++;
 		//gate->gs.yinput.pi[g] = 0;
-		assert(gate->gs.yinput.pi[g] < 2);
+		precondition_assert(gate->gs.yinput.pi[g] < 2);
 	}
 	UsedGate(idleft);
 	UsedGate(idright);
@@ -741,7 +741,7 @@ void YaoServerSharing::GarbleUniversalGate(GATE* ggate, uint32_t pos, GATE* glef
 	BYTE* univ_table = m_vUniversalGateTable.GetArr() + m_nUniversalGateTableCtr * KEYS_PER_UNIV_GATE_IN_TABLE * m_nSecParamBytes;
 	uint32_t ttid = (gleft->gs.yinput.pi[pos] << 1) + gright->gs.yinput.pi[pos];
 
-	assert(gright->instantiated && gleft->instantiated);
+	precondition_assert(gright->instantiated && gleft->instantiated);
 
 	memcpy(m_bLMaskBuf[0], gleft->gs.yinput.outKey + pos * m_nSecParamBytes, m_nSecParamBytes);
 	m_pKeyOps->XOR(m_bLMaskBuf[1], m_bLMaskBuf[0], m_vR.GetArr());
@@ -753,7 +753,7 @@ void YaoServerSharing::GarbleUniversalGate(GATE* ggate, uint32_t pos, GATE* glef
 	outkey[0] = ggate->gs.yinput.outKey + pos * m_nSecParamBytes;
 	outkey[1] = m_bOKeyBuf[0];
 
-	assert(((uint64_t*) m_bZeroBuf)[0] == 0);
+	precondition_assert(((uint64_t*) m_bZeroBuf)[0] == 0);
 	//GRR: Encryption with both original keys of a zero-string becomes the key on the output wire of the gate
 	EncryptWireGRR3(outkey[0], m_bZeroBuf, m_bLMaskBuf[0], m_bRMaskBuf[0], 0);
 
@@ -777,7 +777,7 @@ void YaoServerSharing::GarbleUniversalGate(GATE* ggate, uint32_t pos, GATE* glef
 
 	for(uint32_t i = 1, keyid; i < 4; i++, univ_table+=m_nSecParamBytes) {
 		keyid = ((ttable>>(ttid^i))&0x01) ^ ggate->gs.yinput.pi[pos];
-		assert(keyid < 2);
+		precondition_assert(keyid < 2);
 		//cout << "Encrypting into outkey = " << outkey << ", " << (unsigned long) m_bOKeyBuf[0] << ", " <<  (unsigned long) m_bOKeyBuf[1] <<
 		//		", truthtable = " << (unsigned uint32_t) g_TruthTable[id^i] << ", mypermbit = " << (unsigned uint32_t) ggate->gs.yinput.pi[pos] << ", id = " << id << endl;
 		EncryptWireGRR3(univ_table, outkey[keyid], m_bLMaskBuf[i>>1], m_bRMaskBuf[i&0x01], i);
@@ -923,7 +923,7 @@ void YaoServerSharing::FinishCircuitLayer(uint32_t level) {
 						permval = val ^ m_vGates[gateid].gs.yinput.pi[k];
 					} else  if (m_vGates[input].context == S_YAO || m_vGates[input].context == S_YAO_REV) {//switch roles gate
 						//std::cout << "copying keys from input " << input << " at position " << k << std::endl;
-						assert(m_vGates[input].instantiated);
+						precondition_assert(m_vGates[input].instantiated);
 						uint32_t val = m_vGates[input].gs.yval[((k+1) * m_nSecParamBytes)-1] & 0x01; //get client permutation bit
 						//std::cout << "Server conv share = " << val << std::endl;
 						permval = val ^ m_vGates[gateid].gs.yinput.pi[k];
@@ -1062,7 +1062,7 @@ void YaoServerSharing::EvaluateSIMDGate(uint32_t gateid) {
 		for (uint32_t g = 0; g < gate->nvals; g++, keyptr += m_nSecParamBytes) {
 			memcpy(keyptr, m_vGates[idleft].gs.yinput.outKey, m_nSecParamBytes);
 			gate->gs.yinput.pi[g] = m_vGates[idleft].gs.yinput.pi[0];
-			assert(gate->gs.yinput.pi[g] < 2);
+			precondition_assert(gate->gs.yinput.pi[g] < 2);
 		}
 		UsedGate(idleft);
 	} else if (gate->type == G_COMBINEPOS) {
@@ -1074,7 +1074,7 @@ void YaoServerSharing::EvaluateSIMDGate(uint32_t gateid) {
 			uint32_t idleft = combinepos[g];
 			memcpy(keyptr, m_vGates[idleft].gs.yinput.outKey + pos * m_nSecParamBytes, m_nSecParamBytes);
 			gate->gs.yinput.pi[g] = m_vGates[idleft].gs.yinput.pi[pos];
-			assert(gate->gs.yinput.pi[g] < 2);
+			precondition_assert(gate->gs.yinput.pi[g] < 2);
 			UsedGate(idleft);
 		}
 		free(combinepos);
@@ -1088,7 +1088,7 @@ void YaoServerSharing::EvaluateSIMDGate(uint32_t gateid) {
 		for (uint32_t g = 0; g < gate->nvals; g++, keyptr += m_nSecParamBytes) {
 			memcpy(keyptr, m_vGates[idparent].gs.yinput.outKey + positions[g] * m_nSecParamBytes, m_nSecParamBytes);
 			gate->gs.yinput.pi[g] = m_vGates[idparent].gs.yinput.pi[positions[g]];
-			assert(gate->gs.yinput.pi[g] < 2);
+			precondition_assert(gate->gs.yinput.pi[g] < 2);
 		}
 		UsedGate(idparent);
 		if(del_pos)

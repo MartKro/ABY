@@ -22,10 +22,10 @@
 #include "abycircuit.h"
 #include "circuit.h"
 #include "../ABY_utils/convtypes.h"
+#include "../ABY_utils/asserthandling.h"
 #include <ENCRYPTO_utils/cbitvector.h>
 #include <ENCRYPTO_utils/parse_options.h>
 #include <ENCRYPTO_utils/typedefs.h>
-#include <cassert>
 #include <cstring>
 #include <map>
 #include <algorithm>
@@ -651,7 +651,7 @@ private:
 	 */
 	template<class T> share* InternalPutINGate(uint32_t nvals, T val, uint32_t bitlen, e_role role) {
 		share* shr = new boolshare(bitlen, this);
-		assert(nvals <= sizeof(T) * 8);
+		precondition_assert(nvals <= sizeof(T) * 8);
 		T mask = 0;
 
 		memset(&mask, 0xFF, ceil_divide(nvals, 8));
@@ -668,7 +668,7 @@ private:
 	 */
 	template<class T> share* InternalPutSharedINGate(uint32_t nvals, T val, uint32_t bitlen) {
 		share* shr = new boolshare(bitlen, this);
-		assert(nvals <= sizeof(T) * 8);
+		precondition_assert(nvals <= sizeof(T) * 8);
 		T mask = 0;
 
 		memset(&mask, 0xFF, ceil_divide(nvals, 8));

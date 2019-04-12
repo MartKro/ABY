@@ -442,7 +442,7 @@ int32_t bench_operations(aby_ops_t* bench_ops, uint32_t nops, ABYParty* party, u
 
 				if(!no_verify) {
 					//std::cout << "Running verification" << std::endl;
-					assert(tmpnvals == nvals);
+					verify_assert(tmpnvals == nvals);
 
 					for (uint32_t j = 0; j < nvals; j++) {
 						if(verifyvec[j] != (cvec[j]&typebitmask)) {
@@ -451,7 +451,7 @@ int32_t bench_operations(aby_ops_t* bench_ops, uint32_t nops, ABYParty* party, u
 							"]: a = " << avec[j] <<	", b = " << bvec[j] << ", c = " << (cvec[j]&typebitmask) << ", verify = " <<
 							verifyvec[j] << std::endl;
 
-							assert(verifyvec[j] == (cvec[j]&typebitmask));
+							verify_assert(verifyvec[j] == (cvec[j]&typebitmask));
 						}
 					}
 					//std::cout << "Verification succeeded" << std::endl;
@@ -492,7 +492,7 @@ bool run_bench(e_role role, const std::string& address, uint16_t port, seclvl se
 
 	if (operation > -1) {
 		op = new aby_ops_t;
-		assert(operation < (int) (sizeof(m_tBenchOps) / sizeof(aby_ops_t)));
+		precondition_assert(operation < (int) (sizeof(m_tBenchOps) / sizeof(aby_ops_t)));
 		op->op = m_tBenchOps[operation].op;
 		op->opname = m_tBenchOps[operation].opname;
 		op->sharing = m_tBenchOps[operation].sharing;

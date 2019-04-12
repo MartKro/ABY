@@ -42,12 +42,12 @@ void share::init(Circuit* circ, uint32_t maxbitlen) {
 }
 
 uint32_t share::get_wire_id(uint32_t pos_id) {
-	assert(pos_id < m_ngateids.size());
+	precondition_assert(pos_id < m_ngateids.size());
 	return m_ngateids[pos_id];
 }
 
 share* share::get_wire_ids_as_share(uint32_t pos_id) {
-	assert(pos_id < m_ngateids.size());
+	precondition_assert(pos_id < m_ngateids.size());
 	share* out = new boolshare(1, m_ccirc);
 	out->set_wire_id(0, m_ngateids[pos_id]);
 	return out;
@@ -55,7 +55,7 @@ share* share::get_wire_ids_as_share(uint32_t pos_id) {
 
 
 void share::set_wire_id(uint32_t pos_id, uint32_t wireid) {
-	assert(pos_id < m_ngateids.size());
+	precondition_assert(pos_id < m_ngateids.size());
 	m_ngateids[pos_id] = wireid;
 }
 
@@ -76,7 +76,7 @@ uint32_t share::get_max_bitlength() {
 }
 
 void share::set_max_bitlength(uint32_t max_bitlength) {
-	assert(max_bitlength >= m_ngateids.size());
+	precondition_assert(max_bitlength >= m_ngateids.size());
 	m_nmaxbitlen = max_bitlength;
 }
 
@@ -90,7 +90,7 @@ uint32_t share::get_nvals() {
 	for (auto i : m_ngateids) {
 		n = m_ccirc->GetNumVals(i);
 		if (nvals) {
-			assert(nvals == n && "get_nvals() needs all wires to have the same nvals in order to be unambiguous."); // check that nvals on all wires are the same
+			precondition_assert(nvals == n && "get_nvals() needs all wires to have the same nvals in order to be unambiguous."); // check that nvals on all wires are the same
 		} else {
 			nvals = n; // set nvals to that of first wire
 		}
@@ -121,7 +121,7 @@ uint8_t* boolshare::get_clear_value_ptr() {
 	out = (uint8_t*) calloc(ceil_divide(m_ngateids.size(), 8) * nvals, sizeof(uint8_t));
 
 	for (uint32_t i = 0, ibytes; i < m_ngateids.size(); i++) {
-		assert(nvals == m_ccirc->GetNumVals(m_ngateids[i]));
+		precondition_assert(nvals == m_ccirc->GetNumVals(m_ngateids[i]));
 		gatevals = m_ccirc->GetOutputGateValue(m_ngateids[i]);
 
 		ibytes = i / 8;
@@ -135,7 +135,7 @@ uint8_t* boolshare::get_clear_value_ptr() {
 
 //TODO This method will only work up to a bitlength of 32
 void boolshare::get_clear_value_vec(uint32_t** vec, uint32_t *bitlen, uint32_t *nvals) {
-	assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
+	precondition_assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
 	UGATE_T* outvalptr;
 	uint32_t gnvals = 1;
 
@@ -149,7 +149,7 @@ void boolshare::get_clear_value_vec(uint32_t** vec, uint32_t *bitlen, uint32_t *
 
 	for (uint32_t i = 1; i < m_ngateids.size(); i++) {
 		gnvals = m_ccirc->GetOutputGateValue(m_ngateids[i], outvalptr);
-		assert(*nvals == gnvals);
+		precondition_assert(*nvals == gnvals);
 
 		for (uint32_t j = 0; j < *nvals; j++) {
 			(*vec)[j] = (*vec)[j] + (((outvalptr[j / 64] >> (j % 64)) & 0x01) << i);
@@ -163,7 +163,7 @@ void boolshare::get_clear_value_vec(uint32_t** vec, uint32_t *bitlen, uint32_t *
 //TODO: copied from 32 bits. Put template in and test later on!
 //TODO This method will only work up to a bitlength of 64
 void boolshare::get_clear_value_vec(uint64_t** vec, uint32_t *bitlen, uint32_t *nvals) {
-	assert(m_ngateids.size() <= sizeof(uint64_t) * 8);
+	precondition_assert(m_ngateids.size() <= sizeof(uint64_t) * 8);
 	UGATE_T* outvalptr;
 	uint32_t gnvals = 1;
 
@@ -177,7 +177,7 @@ void boolshare::get_clear_value_vec(uint64_t** vec, uint32_t *bitlen, uint32_t *
 
 	for (uint32_t i = 1; i < m_ngateids.size(); i++) {
 		gnvals = m_ccirc->GetOutputGateValue(m_ngateids[i], outvalptr);
-		assert(*nvals == gnvals);
+		precondition_assert(*nvals == gnvals);
 
 		for (uint32_t j = 0; j < *nvals; j++) {
 			(*vec)[j] = (*vec)[j] + (((outvalptr[j / 64] >> (j % 64)) & 0x01) << i);
@@ -227,7 +227,7 @@ uint8_t* arithshare::get_clear_value_ptr() {
 }
 
 void arithshare::get_clear_value_vec(uint32_t** vec, uint32_t* bitlen, uint32_t* nvals) {
-	//assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
+	//precondition_assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
 
 	UGATE_T* gate_val;
 	*nvals = 0;
@@ -252,7 +252,7 @@ void arithshare::get_clear_value_vec(uint32_t** vec, uint32_t* bitlen, uint32_t*
 
 //TODO: copied from 32 bits. Put template in and test later on!
 void arithshare::get_clear_value_vec(uint64_t** vec, uint32_t* bitlen, uint32_t* nvals) {
-	//assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
+	//precondition_assert(m_ngateids.size() <= sizeof(uint32_t) * 8);
 
 	UGATE_T* gate_val;
 	*nvals = 0;

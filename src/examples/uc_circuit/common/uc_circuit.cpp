@@ -200,7 +200,7 @@ int32_t test_universal_circuit(e_role role, char* address, uint16_t port, seclvl
 	BooleanCircuit* circ =
 			(BooleanCircuit*) sharings[sharing]->GetCircuitBuildRoutine();
 
-	assert(circ->GetCircuitType() == C_BOOLEAN);
+	verify_assert(circ->GetCircuitType() == C_BOOLEAN);
 
 	srand(time(NULL));
 

@@ -6,6 +6,10 @@ if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
 endif()
 
 option(ABY_BUILD_EXE "Build executables" OFF)
+option(ABY_BUILD_TESTS "Build tests" OFF)
+
+include(CMakeDependentOption)
+CMAKE_DEPENDENT_OPTION(ABY_BUILD_TEST_EXE "Build tests for the executables" ON "ABY_BUILD_EXE;ABY_BUILD_TESTS" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -62,8 +66,19 @@ find_package(Boost 1.66.0 REQUIRED)
 
 add_subdirectory(src/abycore)
 
+if(ABY_BUILD_EXE OR ABY_BUILD_TESTS)
+    add_subdirectory(src/test)
+endif()
 
 if(ABY_BUILD_EXE)
-    add_subdirectory(src/test)
     add_subdirectory(src/examples)
-endif(ABY_BUILD_EXE)
+endif()
+
+if(ABY_BUILD_TESTS)
+    add_subdirectory(extern/googletest EXCLUDE_FROM_ALL)
+    add_test(NAME operations COMMAND operations_test)
+endif()
+
+if(ABY_BUILD_TEST_EXE)
+    add_test(NAME examplestest COMMAND examples_test)
+endif()

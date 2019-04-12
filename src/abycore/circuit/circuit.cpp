@@ -91,30 +91,30 @@ void Circuit::Reset() {
 }
 
 gate_specific Circuit::GetGateSpecificOutput(uint32_t gateid) {
-	assert(m_vGates[gateid].instantiated);
+	precondition_assert(m_vGates[gateid].instantiated);
 	return m_vGates[gateid].gs;
 }
 
 uint32_t Circuit::GetOutputGateValue(uint32_t gateid, UGATE_T*& outval) {
-	assert(m_vGates[gateid].instantiated);
+	precondition_assert(m_vGates[gateid].instantiated);
 	outval = m_vGates[gateid].gs.val;
 	return m_vGates[gateid].nvals;
 }
 
 UGATE_T* Circuit::GetOutputGateValue(uint32_t gateid) {
-	assert(m_vGates[gateid].instantiated);
+	precondition_assert(m_vGates[gateid].instantiated);
 	return m_vGates[gateid].gs.val;
 }
 
 /* Converts a Yao share to an Arithmetic share. The boolsharing circuit needs to be from type S_BOOL! */
 share* Circuit::PutY2AGate(share* ina, Circuit* boolsharingcircuit) {
-	assert(boolsharingcircuit->GetContext() == S_BOOL);
+	precondition_assert(boolsharingcircuit->GetContext() == S_BOOL);
 	return PutB2AGate(boolsharingcircuit->PutY2BGate(ina));
 }
 
 /* Converts an Arithmetic share to a Bool share. The yaosharing circuit needs to be from type S_YAO or S_YAO_REV! */
 share* Circuit::PutA2BGate(share* ina, Circuit* yaosharingcircuit) {
-	assert(yaosharingcircuit->GetContext() == S_YAO || yaosharingcircuit->GetContext() == S_YAO_REV);
+	precondition_assert(yaosharingcircuit->GetContext() == S_YAO || yaosharingcircuit->GetContext() == S_YAO_REV);
 	return PutY2BGate(yaosharingcircuit->PutA2YGate(ina));
 }
 
@@ -205,7 +205,7 @@ share* Circuit::PutCombinerGate(share* input) {
 }
 
 share* Circuit::PutCombinerGate(share* ina, share* inb) {
-	assert(ina->get_circuit_type() == inb->get_circuit_type());
+	precondition_assert(ina->get_circuit_type() == inb->get_circuit_type());
 	std::vector<uint32_t> wires(ina->get_bitlength() + inb->get_bitlength());
 //	std::cout << "Size on left = " << ina->get_bitlength() << " (" << m_vGates[ina->get_wire_id(0)].nvals << ") on right = " << inb->get_bitlength()
 //			<< " ("<< m_vGates[inb->get_wire_id(0)].nvals << ")" << std::endl;
@@ -324,9 +324,9 @@ share* Circuit::PutSIMDAssertGate(share* in, uint32_t nvals, uint64_t* assert_va
 #else
 	share* outgates = EnsureOutputGate(in);
 
-	assert(bitlen == in->get_bitlength());
+	precondition_assert(bitlen == in->get_bitlength());
 	for (uint32_t i = 0; i < in->get_bitlength(); i++) {
-		assert(m_vGates[in->get_wire_id(i)].nvals == nvals);
+		precondition_assert(m_vGates[in->get_wire_id(i)].nvals == nvals);
 	}
 
 	uint32_t tmp = m_cCircuit->PutAssertGate(outgates->get_wires(), bitlen, (UGATE_T*) assert_val);
@@ -369,7 +369,7 @@ share* Circuit::PutSIMDAssertGate(share* in, uint32_t nvals, uint8_t* assert_val
 void Circuit::ExportCircuitInBristolFormat(share* ingates_client, share* ingates_server, share* outgates,
 		const char* filename) {
 	//only works for Boolean circuits
-	assert(m_eCirctype == C_BOOLEAN);
+	precondition_assert(m_eCirctype == C_BOOLEAN);
 	m_cCircuit->ExportCircuitInBristolFormat(ingates_client->get_wires(), ingates_server->get_wires(),
 			outgates->get_wires(), filename);
 }

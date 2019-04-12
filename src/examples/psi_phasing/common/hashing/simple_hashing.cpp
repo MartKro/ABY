@@ -29,7 +29,7 @@ uint8_t* simple_hashing(uint8_t* elements, uint32_t neles, uint32_t bitlen, uint
 	//in case no maxbinsize is specified, compute based on Eq3 in eprint 2016/930
 	if(*maxbinsize == 0) {
 		int maxbin = compute_maxbin(nhashfuns * neles, hs.nbins);
-		assert(maxbin != -1);
+		precondition_assert(maxbin != -1);
 		*maxbinsize = (uint32_t) maxbin;
 	}
 

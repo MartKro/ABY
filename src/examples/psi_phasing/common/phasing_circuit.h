@@ -22,10 +22,10 @@
 #include "../../../abycore/circuit/arithmeticcircuits.h"
 #include "../../../abycore/circuit/circuit.h"
 #include "../../../abycore/aby/abyparty.h"
+#include "../../../abycore/ABY_utils/asserthandling.h"
 #include "hashing/cuckoo.h"
 #include "hashing/hashing_util.h"
 #include "hashing/simple_hashing.h"
-#include <cassert>
 
 int32_t test_phasing_circuit(e_role role, const std::string& address, uint16_t port, seclvl seclvl,
 		uint32_t server_neles, uint32_t client_neles, uint32_t bitlen, double epsilon,

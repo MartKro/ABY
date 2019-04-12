@@ -51,7 +51,7 @@ int32_t test_sha1_circuit(e_role role, const std::string& address, uint16_t port
 
 	Circuit* circ = sharings[sharing]->GetCircuitBuildRoutine();
 	//Circuit build routine works for Boolean circuits only right now
-	assert(circ->GetCircuitType() == C_BOOLEAN);
+	precondition_assert(circ->GetCircuitType() == C_BOOLEAN);
 
 	share *s_msgS, *s_msgC, *s_hash_out;
 	s_msgS = circ->PutSIMDINGate(nvals, msgS.GetArr(), sha1bits_per_party, SERVER);
@@ -91,7 +91,7 @@ int32_t test_sha1_circuit(e_role role, const std::string& address, uint16_t port
 		std::cout << "(" << i << ") Verify:\t";
 		verify.PrintHex(i * ABY_SHA1_OUTPUT_BYTES, (i + 1) * ABY_SHA1_OUTPUT_BYTES);
 #endif
-		assert(verify.IsEqual(out, i*ABY_SHA1_OUTPUT_BITS, (i+1)*ABY_SHA1_OUTPUT_BITS));
+		verify_assert(verify.IsEqual(out, i*ABY_SHA1_OUTPUT_BITS, (i+1)*ABY_SHA1_OUTPUT_BITS));
 	}
 
 	delete crypt;

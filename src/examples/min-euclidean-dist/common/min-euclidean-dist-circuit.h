@@ -21,7 +21,7 @@
 
 #include "../../../abycore/circuit/circuit.h"
 #include "../../../abycore/aby/abyparty.h"
-#include <cassert>
+#include "../../../abycore/ABY_utils/asserthandling.h"
 #include <vector>
 
 class BooleanCircuit;

@@ -21,7 +21,7 @@
 #include "../../abycore/circuit/share.h"
 #include "../../abycore/circuit/booleancircuits.h"
 #include "../../abycore/sharing/sharing.h"
-#include <cassert>
+#include "../../abycore/ABY_utils/asserthandling.h"
 #include <iomanip>
 #include <iostream>
 #include <math.h>

@@ -51,7 +51,7 @@ int32_t test_lowmc_circuit(e_role role, const std::string& address, uint16_t por
 
 	Circuit* circ = sharings[sharing]->GetCircuitBuildRoutine();
 	//Circuit build routine works for Boolean circuits only
-	assert(circ->GetCircuitType() == C_BOOLEAN);
+	precondition_assert(circ->GetCircuitType() == C_BOOLEAN);
 
 	share *s_in, *s_key, *s_ciphertext;
 	s_in = circ->PutSIMDINGate(nvals, input.GetArr(), param->blocksize, CLIENT);

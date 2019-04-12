@@ -142,7 +142,7 @@ share* build_min_euclidean_dist_circuit(share*** S, share** C, uint32_t n, uint3
 	BooleanCircuit * yaocirc = (BooleanCircuit*) sharings[S_YAO]->GetCircuitBuildRoutine();
 
 	distance = (share**) malloc(sizeof(share*) * n);
-	assert(mincirc->GetCircuitType() == C_BOOLEAN);
+	precondition_assert(mincirc->GetCircuitType() == C_BOOLEAN);
 
 	for (i = 0; i < n; i++) {
 		distance[i] = distcirc->PutMULGate(S[i][0], C[0]);
