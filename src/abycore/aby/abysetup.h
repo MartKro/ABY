@@ -26,8 +26,13 @@
 #include <ot/ot-ext.h>
 #include <ot/xormasking.h>
 #include "../ot/arithmtmasking.h"
+#ifdef MALICIOUS_OT
+#include <ot/alsz-ot-ext-snd.h>
+#include <ot/alsz-ot-ext-rec.h>
+#else
 #include <ot/iknp-ot-ext-snd.h>
 #include <ot/iknp-ot-ext-rec.h>
+#endif
 #include <ot/kk-ot-ext-snd.h>
 #include <ot/kk-ot-ext-rec.h>
 #include "../DJN/djnparty.h"
