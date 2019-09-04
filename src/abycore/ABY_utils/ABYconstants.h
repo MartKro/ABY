@@ -23,7 +23,7 @@
 #include <ENCRYPTO_utils/constants.h>
 
 // Set to 1 for production. 1 will circumvent output reconstruction in the PrintValue and Assert gates, 0 prints these intermediate values.
-#define ABY_PRODUCTION 0
+#define ABY_PRODUCTION 1
 
 //#define ABYDEBUG
 //#define PRINT_OUTPUT
@@ -59,6 +59,7 @@
 //#define USE_KK_OT
 //#define USE_PIPELINED_AES_NI
 //#define USE_KK_OT_FOR_MT
+#define MALICIOUS_OT //OTExtension: Use ALSZ13/ALSZ15ALSZ17 instead of IKNP03 for malicous receivers
 //#define GETCLEARVALUE_DEBUG
 //#define DEBUGABYPARTY
 

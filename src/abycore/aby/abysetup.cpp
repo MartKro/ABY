@@ -142,10 +142,18 @@ BOOL ABYSetup::PrepareSetupPhase(comm_ctx* comm) {
 		delete[] benchtmp;
 #endif
 
+#ifdef MALICIOUS_OT
+		//TODO fix hardcoded numots and numchecks to a proper security parameter
+		iknp_ot_sender = new ALSZOTExtSnd(m_cCrypt, m_tComm->rcv_std.get(), m_tComm->snd_std.get(), 190, 380,
+			/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ false);
+		iknp_ot_receiver = new ALSZOTExtRec(m_cCrypt, m_tComm->rcv_inv.get(), m_tComm->snd_inv.get(), 190, 380,
+			/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ false);
+#else
 		iknp_ot_sender = new IKNPOTExtSnd(m_cCrypt, m_tComm->rcv_std.get(), m_tComm->snd_std.get(),
 				/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ true);
 		iknp_ot_receiver = new IKNPOTExtRec(m_cCrypt, m_tComm->rcv_inv.get(), m_tComm->snd_inv.get(),
 				/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ true);
+#endif
 
 #ifdef USE_KK_OT
 		kk_ot_sender = new KKOTExtSnd(m_cCrypt, m_tComm->rcv_std, m_tComm->snd_std,
@@ -174,10 +182,19 @@ BOOL ABYSetup::PrepareSetupPhase(comm_ctx* comm) {
 		std::cout << "Throughput: " << 2 * (tmparraysize>>20)*benchrounds / (getMillies(start, end) / 1000) << " MiB/s" << std::endl;
 				delete benchtmp;
 #endif
+
+#ifdef MALICIOUS_OT
+		//TODO fix hardcoded numots and numchecks to a proper security parameter
+		iknp_ot_receiver = new ALSZOTExtRec(m_cCrypt, m_tComm->rcv_std.get(), m_tComm->snd_std.get(), 190, 380,
+			/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ false);
+		iknp_ot_sender = new ALSZOTExtSnd(m_cCrypt, m_tComm->rcv_inv.get(), m_tComm->snd_inv.get(), 190, 380,
+			/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ false);
+#else
 		iknp_ot_receiver = new IKNPOTExtRec(m_cCrypt, m_tComm->rcv_std.get(), m_tComm->snd_std.get(),
 				/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ true);
 		iknp_ot_sender = new IKNPOTExtSnd(m_cCrypt, m_tComm->rcv_inv.get(), m_tComm->snd_inv.get(),
 				/* num_ot_blocks */ 1024, /* verify_ot */ false, /* use_fixed_aes_key_hashing */ true);
+#endif
 
 #ifdef USE_KK_OT
 		kk_ot_receiver = new KKOTExtRec(m_cCrypt, m_tComm->rcv_std, m_tComm->snd_std,

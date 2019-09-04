@@ -59,6 +59,8 @@ public:
 	double GetTiming(ABYPHASE phase);
 	uint64_t GetSentData(ABYPHASE phase);
 	uint64_t GetReceivedData(ABYPHASE phase);
+	uint64_t GetSentData();
+	uint64_t GetReceivedData();
 	uint32_t GetTotalGates();
 	uint32_t GetTotalDepth();
 

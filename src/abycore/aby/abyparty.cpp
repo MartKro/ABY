@@ -632,6 +632,22 @@ uint64_t ABYParty::GetReceivedData(ABYPHASE phase) {
 	return GetReceivedDataForPhase(phase);
 }
 
+uint64_t ABYParty::GetSentData() {
+	uint64_t sent_data = 0;
+	for(uint32_t i = 0; i < ABYPHASE::P_LAST; ++i) {
+		sent_data += GetSentData(static_cast<ABYPHASE>(i));
+	}
+	return sent_data;
+}
+
+uint64_t ABYParty::GetReceivedData() {
+	uint64_t sent_data = 0;
+	for(uint32_t i = 0; i < ABYPHASE::P_LAST; ++i) {
+		sent_data += GetReceivedData(static_cast<ABYPHASE>(i));
+	}
+	return sent_data;
+}
+
 uint32_t ABYParty::GetTotalGates() {
 	return m_pCircuit->GetGateHead();
 }
